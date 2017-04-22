@@ -166,7 +166,7 @@ abstract class SoapMessage
     public function getContent()
     {
         if (null !== $this->contentDomDocument) {
-            $this->content = $this->contentDomDocument->saveXML();
+            $this->content = $this->contentDomDocument->saveXML(null, LIBXML_NOEMPTYTAG);
             $this->contentDomDocument = null;
         }
         return $this->content;
