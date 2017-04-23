@@ -83,7 +83,14 @@ class SoapClient extends \SoapClient
      */
     protected $soapKernel = null;
 
-    /**
+	/**
+	 * Connection timeout in seconds.
+	 *
+	 * @var int $timeout
+	 */
+    private $timeout = 10;
+
+	/**
      * Constructor.
      *
      * @param string               $wsdl    WSDL file
@@ -207,7 +214,7 @@ class SoapClient extends \SoapClient
         // do actual SOAP request
         $soapResponse = $this->__doRequest2($soapRequest);
 
-        // return SOAP response to ext/soap
+	    // return SOAP response to ext/soap
         return $soapResponse->getContent();
     }
 
@@ -224,10 +231,17 @@ class SoapClient extends \SoapClient
         // run SoapKernel on SoapRequest
         $this->soapKernel->filterRequest($soapRequest);
 
-        // perform HTTP request with cURL
+	    // Set timeout
+	    $original_timeout = ini_get('default_socket_timeout');
+	    ini_set('default_socket_timeout', $this->timeout);
+
+	    // perform HTTP request with cURL
         $soapResponse = $this->__doHttpRequest($soapRequest);
 
-        // run SoapKernel on SoapResponse
+	    // Restore original timeout
+	    ini_set('default_socket_timeout', $original_timeout);
+
+	    // run SoapKernel on SoapResponse
         $this->soapKernel->filterResponse($soapResponse);
 
         return $soapResponse;
@@ -335,16 +349,18 @@ class SoapClient extends \SoapClient
             if (!isset($options['typemap'])) {
                 $options['typemap'] = array();
             }
-            $options['typemap'][] = array(
-                'type_name' => $converter->getTypeName(),
-                'type_ns'   => $converter->getTypeNamespace(),
-                'from_xml'  => function($input) use ($converter) {
-                    return $converter->convertXmlToPhp($input);
-                },
-                'to_xml'    => function($input) use ($converter) {
-                    return $converter->convertPhpToXml($input);
-                },
-            );
+	        if (isset($converter)) {
+		        $options['typemap'][] = array(
+			        'type_name' => $converter->getTypeName(),
+			        'type_ns' => $converter->getTypeNamespace(),
+			        'from_xml' => function ($input) use ($converter) {
+				        return $converter->convertXmlToPhp($input);
+			        },
+			        'to_xml' => function ($input) use ($converter) {
+				        return $converter->convertPhpToXml($input);
+			        },
+		        );
+	        }
         }
     }
 

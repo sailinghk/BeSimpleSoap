@@ -57,6 +57,15 @@ class MtomTypeConverter implements TypeConverterInterface, SoapKernelAwareInterf
         $includes = $doc->getElementsByTagNameNS(Helper::NS_XOP, 'Include');
         $include = $includes->item(0);
 
+		// Base64
+	    if (!$include) {
+		    // Base64 Attachments
+		    $node =  $doc->getElementsByTagName('fileData')->item(0);
+		    if ($node && $node->nodeValue) {
+			    return $node->nodeValue;
+		    }
+	    }
+
         // convert href -> myhref for external references as PHP throws exception in this case
         // http://svn.php.net/viewvc/php/php-src/branches/PHP_5_4/ext/soap/php_encoding.c?view=markup#l3436
         $ref = $include->getAttribute('myhref');

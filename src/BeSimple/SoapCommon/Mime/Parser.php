@@ -71,6 +71,10 @@ class Parser
                         $currentPart->setHeader($headerName, trim($headerValue));
                     }
                 }
+	            // Added 2 lines to fix the naming case issue
+	            if ($headerName == 'Content-Id') {
+		            $headerName = 'Content-ID';
+	            }
                 unset($currentHeader);
             }
             if ($inHeader) {

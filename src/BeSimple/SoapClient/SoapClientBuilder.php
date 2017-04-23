@@ -13,6 +13,7 @@
 namespace BeSimple\SoapClient;
 
 use BeSimple\SoapCommon\AbstractSoapBuilder;
+use BeSimple\SoapCommon\Classmap;
 use BeSimple\SoapCommon\Helper;
 
 /**
@@ -49,7 +50,10 @@ class SoapClientBuilder extends AbstractSoapBuilder
     public function build()
     {
         $this->validateOptions();
-
+	    $soapOptions = $this->getSoapOptions();
+	    if (isset($soapOptions['local_cert']) && !isset($soapOptions['passphrase'])) {
+		    $soapOptions['passphrase'] = null;
+	    }
         return new SoapClient($this->wsdl, $this->getSoapOptions());
     }
 
@@ -205,11 +209,11 @@ class SoapClientBuilder extends AbstractSoapBuilder
     /**
     * SOAP attachment type Base64.
     *
-    * @return \BeSimple\SoapServer\SoapServerBuilder
+    * @return \BeSimple\SoapClient\SoapClientBuilder
     */
     public function withBase64Attachments()
     {
-        $this->options['attachment_type'] = Helper::ATTACHMENTS_TYPE_BASE64;
+        $this->soapOptions['attachment_type'] = Helper::ATTACHMENTS_TYPE_BASE64;
 
         return $this;
     }
@@ -217,11 +221,11 @@ class SoapClientBuilder extends AbstractSoapBuilder
     /**
      * SOAP attachment type SwA.
      *
-     * @return \BeSimple\SoapServer\SoapServerBuilder
+     * @return \BeSimple\SoapClient\SoapClientBuilder
      */
     public function withSwaAttachments()
     {
-        $this->options['attachment_type'] = Helper::ATTACHMENTS_TYPE_SWA;
+        $this->soapOptions['attachment_type'] = Helper::ATTACHMENTS_TYPE_SWA;
 
         return $this;
     }
@@ -229,14 +233,38 @@ class SoapClientBuilder extends AbstractSoapBuilder
     /**
      * SOAP attachment type MTOM.
      *
-     * @return \BeSimple\SoapServer\SoapServerBuilder
+     * @return \BeSimple\SoapClient\SoapClientBuilder
      */
     public function withMtomAttachments()
     {
-        $this->options['attachment_type'] = Helper::ATTACHMENTS_TYPE_MTOM;
+        $this->soapOptions['attachment_type'] = Helper::ATTACHMENTS_TYPE_MTOM;
 
         return $this;
     }
+
+	/**
+	 * Sets the classmap with array.
+	 *
+	 * @param array $arrClassMap The classmap array.
+	 * @param boolean $merge If true the given classmap is merged into the existing one, otherwise the existing one is overwritten.
+	 *
+	 * @return \BeSimple\SoapClient\SoapClientBuilder
+	 */
+	public function withClassmapArray(array $arrClassMap, $merge = true)
+	{
+		$classmap = new Classmap();
+		$classmap->set($arrClassMap);
+		return $this->withClassmap($classmap, $merge);
+	}
+
+	/**
+	 * @param int $seconds
+	 * @return SoapClientBuilder
+	 */
+	public function withConnectionTimeOut($seconds = 10) {
+		$this->soapOptions['connection_timeout'] = $seconds;
+		return $this;
+	}
 
     /**
      * Validate options.

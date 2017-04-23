@@ -180,7 +180,7 @@ class WsdlDownloader
         }
 
         // XML schema include/import
-        $query = './/'.Helper::PFX_XML_SCHEMA.':include | .//'.Helper::PFX_XML_SCHEMA.':import';
+        $query = './/'.Helper::PFX_XML_SCHEMA.':include | .//'.Helper::PFX_XML_SCHEMA.':import | .//'.'xs'.':import';
         $nodes = $xpath->query($query);
         if ($nodes->length > 0) {
             foreach ($nodes as $node) {
@@ -192,7 +192,7 @@ class WsdlDownloader
                     } elseif (null !== $parentFilePath) {
                         $schemaLocation = $this->resolveRelativePathInUrl($parentFilePath, $schemaLocation);
                         $schemaLocation = $this->download($schemaLocation);
-                        $node->setAttribute('schemaLocation', $schemaLocation);
+                        $node->setAttribute('schemaLocation', basename($schemaLocation));
                     }
                 }
             }
