@@ -50,10 +50,11 @@ class SoapClientBuilder extends AbstractSoapBuilder
     public function build()
     {
         $this->validateOptions();
-	    if (isset($this->soapOptions['local_cert']) && !isset($this->soapOptions['passphrase'])) {
-		    $this->soapOptions['passphrase'] = null;
+	    $soapOptions = $this->getSoapOptions();
+	    if (isset($soapOptions['local_cert']) && !isset($soapOptions['passphrase'])) {
+		    $soapOptions['passphrase'] = null;
 	    }
-        return new SoapClient($this->wsdl, $this->getSoapOptions());
+        return new SoapClient($this->wsdl, $soapOptions);
     }
 
     /**
