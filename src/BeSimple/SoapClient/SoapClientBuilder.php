@@ -266,6 +266,14 @@ class SoapClientBuilder extends AbstractSoapBuilder
 		return $this;
 	}
 
+	/**
+	 * @return SoapClientBuilder
+	 */
+	public function withTlsVersion12() {
+		$this->soapOptions['CURLOPT_SSLVERSION'] = 6;
+		return $this;
+	}
+
     /**
      * Validate options.
      */
