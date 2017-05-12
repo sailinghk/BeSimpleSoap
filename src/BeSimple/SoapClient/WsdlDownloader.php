@@ -97,8 +97,9 @@ class WsdlDownloader
                 if ($isRemoteFile) {
                     // execute request
                     $responseSuccessfull = $this->curl->exec($wsdl);
+	                $responseCode = $this->curl->getResponseStatusCode();
                     // get content
-                    if ($responseSuccessfull) {
+                    if ($responseCode == 200) {
                         $response = $this->curl->getResponseBody();
 
                         if ($this->resolveRemoteIncludes) {
@@ -107,7 +108,7 @@ class WsdlDownloader
                             file_put_contents($cacheFilePath, $response);
                         }
                     } else {
-                        throw new \ErrorException("SOAP-ERROR: Parsing WSDL: Couldn't load from '" . $wsdl ."'");
+                        throw new \ErrorException("SOAP-ERROR: Parsing WSDL: Couldn't load from '" . $wsdl ."' (HTTP Status: " . $responseCode . ")");
                     }
                 } elseif (file_exists($wsdl)) {
                     $response = file_get_contents($wsdl);
