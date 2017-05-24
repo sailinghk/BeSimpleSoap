@@ -60,7 +60,7 @@ class MtomTypeConverter implements TypeConverterInterface, SoapKernelAwareInterf
 		// Base64
 	    if (!$include) {
 		    // Base64 Attachments
-		    $node =  $doc->getElementsByTagName('fileData')->item(0);
+		    $node =  $doc->getElementsByTagName('*')->item(0);
 		    if ($node && $node->nodeValue) {
 			    return $node->nodeValue;
 		    }
