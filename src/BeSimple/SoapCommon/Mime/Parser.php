@@ -68,13 +68,13 @@ class Parser
                         $boundary = $multipart->getHeader('Content-Type', 'boundary');
                         $start = $multipart->getHeader('Content-Type', 'start');
                     } else {
+	                    // Added 2 lines to fix the naming case issue
+	                    if ($headerName == 'Content-Id') {
+		                    $headerName = 'Content-ID';
+	                    }
                         $currentPart->setHeader($headerName, trim($headerValue));
                     }
                 }
-	            // Added 2 lines to fix the naming case issue
-	            if ($headerName == 'Content-Id') {
-		            $headerName = 'Content-ID';
-	            }
                 unset($currentHeader);
             }
             if ($inHeader) {
